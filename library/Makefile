@@ -1,6 +1,7 @@
 
 # Also see "include/mbedtls/config.h"
 
+CC = riscv64-unknown-elf-gcc
 CFLAGS	?= -O2
 WARNING_CFLAGS ?=  -Wall -Wextra
 LDFLAGS ?=
@@ -170,7 +171,7 @@ else
 all: shared static
 endif
 
-static: libmbedcrypto.a libmbedx509.a libmbedtls.a
+static: libmbedcrypto.a
 
 shared: libmbedcrypto.$(DLEXT) libmbedx509.$(DLEXT) libmbedtls.$(DLEXT)
 
