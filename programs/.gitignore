@@ -65,3 +65,4 @@ x509/req_app
 
 # generated files
 pkey/keyfile.key
+/pkey/*.sig
