@@ -5,7 +5,7 @@ LD = riscv64-unknown-elf-ld
 CKBVM = ~/projects/ckb-vm-test-suite/binary/target/release/asm64
 
 
-CFLAGS	?= -O2
+CFLAGS	?= -Os
 WARNING_CFLAGS ?=  -Wall -Wextra
 LDFLAGS ?=
 
@@ -22,7 +22,7 @@ endif
 
 # add --verbose to dump more information
 rsa_verify_no_fs: rsa_verify_no_fs.o
-	$(CC) -o $@ $< ../../library/libmbedcrypto.a
+	$(CC) $(LOCAL_LDFLAGS) $(LDFLAGS) -o $@ $< ../../library/libmbedcrypto.a
 	echo "Build rsa_verify_no_fs"
 
 run:

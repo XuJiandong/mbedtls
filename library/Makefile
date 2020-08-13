@@ -3,7 +3,7 @@
 
 CC = riscv64-unknown-elf-gcc
 AR = riscv64-unknown-elf-ar
-CFLAGS	?= -O2
+CFLAGS	?= -Os
 WARNING_CFLAGS ?=  -Wall -Wextra
 LDFLAGS ?=
 
