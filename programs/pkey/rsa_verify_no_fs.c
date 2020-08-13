@@ -10,33 +10,14 @@
 #include MBEDTLS_CONFIG_FILE
 #endif
 
-#if defined(MBEDTLS_PLATFORM_C)
-
-#include "mbedtls/platform.h"
-
-#else
-#include <stdio.h>
 #include <stdlib.h>
-#define mbedtls_printf          printf
-#define mbedtls_snprintf        snprintf
-#define mbedtls_exit            exit
-#define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
-#define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
-#endif /* MBEDTLS_PLATFORM_C */
-
-#if !defined(MBEDTLS_BIGNUM_C) || !defined(MBEDTLS_RSA_C) || \
-    !defined(MBEDTLS_SHA256_C) || !defined(MBEDTLS_MD_C)
-int main( void )
-{
-        return 42;
-}
-#else
-
+#include <string.h>
+#define mbedtls_printf(x, ...)  (void)0
+// use this on simulator
+// #define mbedtls_printf printf
 #include "mbedtls/rsa.h"
 #include "mbedtls/md.h"
-
-#include <stdio.h>
-#include <string.h>
+#define CHECK(n) if ((n) != 0) {mbedtls_printf("mbedtls_mpi_read_string failed"); ret = -2; goto exit;}
 
 // hard coded public key
 const char *PRIV_N = "A1D46FBA2318F8DCEF16C280948B1CF27966B9B47225ED2989F8D74B45BD36049C0AAB5AD0FF003553BA843C8E12782FC5873BB89A3DC84B883D25666CD22BF3ACD5B675969F8BEBFBCAC93FDD927C7442B178B10D1DFF9398E52316AAE0AF74E594650BDC3C670241D418684593CDA1A7B9DC4F20D2FDC6F66344074003E211";
@@ -68,6 +49,7 @@ int md_string(const mbedtls_md_info_t *md_info, const char *buf, size_t n, unsig
 }
 
 void mbedtls_mpi_dump(const char *prefix, const mbedtls_mpi *X) {
+    (void)prefix;
     size_t n;
     /*
      * Buffer should have space for (short) label and decimal formatted MPI,
@@ -81,12 +63,30 @@ void mbedtls_mpi_dump(const char *prefix, const mbedtls_mpi *X) {
     mbedtls_printf("%s%s\n", prefix, s);
 }
 
-#define CHECK(n) if ((n) != 0) {mbedtls_printf("mbedtls_mpi_read_string failed"); ret = -2; goto exit;}
+unsigned char get_hex(unsigned char c) {
+    if (c >= '0' && c <= '9')
+        return c - '0';
+    else if (c >= 'A' && c <= 'F')
+        return c - 'A' + 10;
+    else
+        return 0;
+    // todo: support assert?
+}
+
+int scan_hex(const char* s, unsigned char* value) {
+    if (s[0] == '\0' || s[1] == '\0')
+        return 0;
+
+    unsigned char high_part = get_hex(s[0]);
+    unsigned char low_part = get_hex(s[1]);
+
+    *value =  (high_part << 4) + low_part;
+    return 1;
+}
 
 int main(int argc, const char *argv[]) {
-    int ret = 1;
-    unsigned c;
-    int exit_code = MBEDTLS_EXIT_FAILURE;
+    int ret = EXIT_FAILURE;
+    int exit_code = EXIT_FAILURE;
     size_t i;
     mbedtls_rsa_context rsa;
     unsigned char hash[32];
@@ -110,7 +110,8 @@ int main(int argc, const char *argv[]) {
     const char *sig_ptr = sig;
     const char *sig_end = sig + strlen(sig);
     while (1) {
-        int consumed = sscanf(sig_ptr, "%02X", (unsigned int *) &c);
+        unsigned char c = 0;
+        int consumed = scan_hex(sig_ptr, &c);
         if (consumed == 0)
             break;
         if (i >= (int) sizeof(sig_buf))
@@ -120,7 +121,6 @@ int main(int argc, const char *argv[]) {
         if (sig_ptr >= sig_end)
             break;
     }
-
 
     mbedtls_printf("\nVerifying the RSA/SHA-256 signature");
     if ((ret = md_string(
@@ -138,12 +138,9 @@ int main(int argc, const char *argv[]) {
 
     mbedtls_printf("\nOK (the signature is valid)\n\n");
 
-    exit_code = MBEDTLS_EXIT_SUCCESS;
+    exit_code = EXIT_SUCCESS;
 
 exit:
     mbedtls_rsa_free(&rsa);
-    mbedtls_exit(exit_code);
+    return exit_code;
 }
-
-#endif /* MBEDTLS_BIGNUM_C && MBEDTLS_RSA_C && MBEDTLS_SHA256_C &&
-          MBEDTLS_FS_IO */
