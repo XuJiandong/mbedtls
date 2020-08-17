@@ -57,3 +57,5 @@ massif-*
 /tags
 rsa_verify_no_fs
 *.o
+comparison.txt
+comparison.txt.old

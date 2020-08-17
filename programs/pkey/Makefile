@@ -15,12 +15,15 @@ LOCAL_LDFLAGS =
 
 .SILENT:
 
-.PHONY: all rsa_verify_no_fs clean
+.PHONY: all clean all
+
+all: rsa_verify_no_fs
+	echo "Build rsa_verify_no_fs done!"
 
 # add --verbose to dump more information
 rsa_verify_no_fs: rsa_verify_no_fs.o
+	echo "RISCV CC and LD $(CFLAGS) $<"
 	$(CC) $(LOCAL_LDFLAGS) $(LDFLAGS) -o $@ $< ../../library/libmbedcrypto.a
-	echo "Build rsa_verify_no_fs"
 
 run: rsa_verify_no_fs
 	echo running $(CKBVM) rsa_verify_no_fs
@@ -37,11 +40,10 @@ dis:
 	riscv64-unknown-elf-objdump -d rsa_verify_no_fs > dis.txt
 	echo "done"
 
-.c.o:
+%.o : %.c
 	echo "RISCV CC $(CFLAGS) $<"
 	$(CC) $(LOCAL_CFLAGS) $(CFLAGS) -o $@ -c $<
 
 clean:
 	rm -f rsa_verify_no_fs
 	rm -f *.o
-

@@ -172,7 +172,7 @@ else
 all: shared static
 endif
 
-static: libmbedcrypto.a
+static: libmbedcrypto.a libmbedx509.a
 
 shared: libmbedcrypto.$(DLEXT) libmbedx509.$(DLEXT) libmbedtls.$(DLEXT)
 

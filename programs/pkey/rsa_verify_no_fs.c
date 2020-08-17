@@ -2,6 +2,9 @@
  * Same as rsa_verify.c without filesystem support.
  */
 
+// uncomment to profile
+// #define FOR_PROFILE
+
 #if !defined(MBEDTLS_CONFIG_FILE)
 
 #include "mbedtls/config.h"
@@ -84,10 +87,7 @@ int scan_hex(const char* s, unsigned char* value) {
     return 1;
 }
 
-int main(int argc, const char *argv[]) {
-    (void)argc;
-    (void)argv;
-
+int loop_once(void) {
     int ret = EXIT_FAILURE;
     int exit_code = EXIT_FAILURE;
     size_t i;
@@ -144,3 +144,20 @@ exit:
     mbedtls_rsa_free(&rsa);
     return exit_code;
 }
+
+#ifdef FOR_PROFILE
+int main(int argc, const char* argv[]) {
+    (void)argc;
+    (void)argv;
+    for (int i = 0; i < 200000; i++) {
+        loop_once();
+    }
+    return loop_once();
+}
+#else
+int main(int argc, const char* argv[]) {
+    (void)argc;
+    (void)argv;
+    return loop_once();
+}
+#endif
