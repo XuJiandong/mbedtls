@@ -178,7 +178,7 @@ shared: libmbedcrypto.$(DLEXT) libmbedx509.$(DLEXT) libmbedtls.$(DLEXT)
 
 # tls
 libmbedtls.a: $(OBJS_TLS)
-	echo "  AR    $@"
+	echo "  AR   $@"
 	$(AR) $(ARFLAGS) $@ $(OBJS_TLS)
 ifdef APPLE_BUILD
 ifneq ($(APPLE_BUILD),0)
@@ -258,7 +258,7 @@ libmbedcrypto.dll: $(OBJS_CRYPTO)
 	$(CC) -shared -Wl,-soname,$@ -Wl,--out-implib,$@.a -o $@ $(OBJS_CRYPTO) -lws2_32 -lwinmm -lgdi32 -static-libgcc $(LOCAL_LDFLAGS) $(LDFLAGS)
 
 .c.o:
-	echo "  CC    $<"
+	echo "  CC $(CFLAGS) $<"
 	$(CC) $(LOCAL_CFLAGS) $(CFLAGS) -o $@ -c $<
 
 clean:

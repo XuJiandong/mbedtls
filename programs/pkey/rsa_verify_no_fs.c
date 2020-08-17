@@ -85,6 +85,9 @@ int scan_hex(const char* s, unsigned char* value) {
 }
 
 int main(int argc, const char *argv[]) {
+    (void)argc;
+    (void)argv;
+
     int ret = EXIT_FAILURE;
     int exit_code = EXIT_FAILURE;
     size_t i;
@@ -92,14 +95,11 @@ int main(int argc, const char *argv[]) {
     unsigned char hash[32];
     unsigned char sig_buf[MBEDTLS_MPI_MAX_SIZE];
     const char *sig = NULL;
-
+    const char *msg = NULL;
     mbedtls_rsa_init(&rsa, MBEDTLS_RSA_PKCS_V15, 0);
 
-    if (argc != 3) {
-        mbedtls_printf("usage: rsa_verify <string> <signature>\n");
-        goto exit;
-    }
-    sig = argv[2];
+    sig = "5AC84DEA32E756A5A1C287C5F4F1446F0606ACF8202D419570B2082EB8C439FB2157DF482546487B89FD6A8E00452431E57AD264C9D0B7F71182D250219CFCBA74D61AC01ACE48206DA7D124BE2E1DA77A9E1F4CF34F64CC4085DA79AE406A96C4F15467086839A79EAB691C73D1EE248819479574028389376BD7F9FB4F5C9B";
+    msg = "hello,CKB!";
 
     CHECK(mbedtls_mpi_read_string(&rsa.N, 16, PRIV_N));
     CHECK(mbedtls_mpi_read_string(&rsa.E, 16, PRIV_E));
@@ -125,7 +125,7 @@ int main(int argc, const char *argv[]) {
     mbedtls_printf("\nVerifying the RSA/SHA-256 signature");
     if ((ret = md_string(
             mbedtls_md_info_from_type(MBEDTLS_MD_SHA256),
-            argv[1], strlen(argv[1]), hash)) != 0) {
+            msg, strlen(msg), hash)) != 0) {
         mbedtls_printf("failed\n  ! md_string failed.");
         goto exit;
     }
