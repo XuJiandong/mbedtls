@@ -35,15 +35,15 @@ Here we have a small, run-able sample code base of RSA signature verification.
 
 ## Performance and code size on RISC-V
 With options -O3, -O2, -Os(see script [run_with_cflags.sh](https://github.com/XuJiandong/mbedtls/blob/iterator-1/programs/pkey/run_with_cflags.sh)), we have different cycles on CKB-VM and code size, as following:
-| Option | CPU Cycles    | Code size
-|--------|---------------|--------------
-| -O3    | 1,831K cycles | 247K bytes
-| -O2    | 1,828K cycles | 228K bytes
-| -Os    | 1,955K cycles | 220K bytes
-
+RSA Key Size | Option | CPU Cycles    | Code size
+-------------|--------|---------------|--------------
+1024-bit | -O3    | 1,831K cycles | 247K bytes
+1024-bit | -O2    | 1,828K cycles | 228K bytes
+1024-bit | -Os    | 1,955K cycles | 220K bytes
+2048-bit | -Os    | 6,780K cycles | 220K bytes
 
 Note, with option of -O2 is better than with -O3. 
-Here we can see, -O2 is the best with just a little more code size.
+Here we can see, -O2 is the best with just a little more code size. RSA key size with 2048-bit is about ~4 times compared to 1024-bit.
 
 ## Benchmark
 Without mature tool on RISC-V for profiler, we're going to try benchmark on simulator:
