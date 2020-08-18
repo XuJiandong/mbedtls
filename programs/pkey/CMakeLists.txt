@@ -40,6 +40,10 @@ target_link_libraries(rsa_sign_no_fs mbedcrypto)
 add_executable(rsa_verify_no_fs rsa_verify_no_fs.c)
 target_link_libraries(rsa_verify_no_fs mbedcrypto)
 
+add_definitions(-DFOR_PROFILE)
+add_executable(rsa_verify_no_fs_profiler rsa_verify_no_fs.c)
+target_link_libraries(rsa_verify_no_fs_profiler mbedcrypto)
+
 add_executable(rsa_sign_pss rsa_sign_pss.c)
 target_link_libraries(rsa_sign_pss mbedcrypto)
 

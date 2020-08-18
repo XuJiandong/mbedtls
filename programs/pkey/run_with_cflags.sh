@@ -9,6 +9,7 @@ function build {
   make CFLAGS=-O${OPT}
   cd ../programs/pkey
   make clean
+  make CFLAGS=-O${OPT}
   make run | tee -a $FN
   ls -l rsa_verify_no_fs | tee -a $FN
 }

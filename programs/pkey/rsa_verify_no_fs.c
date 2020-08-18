@@ -87,7 +87,7 @@ int scan_hex(const char* s, unsigned char* value) {
     return 1;
 }
 
-int loop_once(void) {
+int loop_once(int argc, const char* argv[]) {
     int ret = EXIT_FAILURE;
     int exit_code = EXIT_FAILURE;
     size_t i;
@@ -100,6 +100,10 @@ int loop_once(void) {
 
     sig = "5AC84DEA32E756A5A1C287C5F4F1446F0606ACF8202D419570B2082EB8C439FB2157DF482546487B89FD6A8E00452431E57AD264C9D0B7F71182D250219CFCBA74D61AC01ACE48206DA7D124BE2E1DA77A9E1F4CF34F64CC4085DA79AE406A96C4F15467086839A79EAB691C73D1EE248819479574028389376BD7F9FB4F5C9B";
     msg = "hello,CKB!";
+    if (argc == 3) {
+        msg = argv[1];
+        sig = argv[2];
+    }
 
     CHECK(mbedtls_mpi_read_string(&rsa.N, 16, PRIV_N));
     CHECK(mbedtls_mpi_read_string(&rsa.E, 16, PRIV_E));
@@ -146,18 +150,19 @@ exit:
 }
 
 #ifdef FOR_PROFILE
+#include <stdio.h>
+
 int main(int argc, const char* argv[]) {
-    (void)argc;
-    (void)argv;
+    printf("start running, to profile...\n");
+    fflush(stdin);
     for (int i = 0; i < 200000; i++) {
-        loop_once();
+        loop_once(argc, argv);
     }
-    return loop_once();
+    printf("Done.\n");
+    return loop_once(argc, argv);
 }
 #else
 int main(int argc, const char* argv[]) {
-    (void)argc;
-    (void)argv;
-    return loop_once();
+    return loop_once(argc, argv);
 }
 #endif
