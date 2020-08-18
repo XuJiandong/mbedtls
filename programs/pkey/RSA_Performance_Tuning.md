@@ -15,7 +15,7 @@ With following changes, it can run on CKB-VM:
 2. [Makefile](https://github.com/XuJiandong/mbedtls/blob/iterator-1/programs/pkey/Makefile)
 
 Note, it's required to make sure "riscv64-unknown-elf-gcc" can be invoked from command line.
-Get more information about how to get [RISC-V GNU toolchain](https://github.com/nervosnetwork/ckb-riscv-gnu-toolchain). Also have a CKB-VM program to run it. I choose this one[asm64](https://github.com/nervosnetwork/ckb-vm-test-suite/blob/master/binary/src/asm64.rs) with modification(show cycles).
+Get more information about how to get [RISC-V GNU toolchain](https://github.com/nervosnetwork/ckb-riscv-gnu-toolchain). Also have a CKB-VM program to run it. I choose this one [asm64](https://github.com/nervosnetwork/ckb-vm-test-suite/blob/master/binary/src/asm64.rs) with modification(show cycles, using [cost_model](https://github.com/nervosnetwork/ckb/blob/develop/script/src/cost_model.rs )).
 Finally, we can try the following:
 ```text
 ► make run
