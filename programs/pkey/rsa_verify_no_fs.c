@@ -1,26 +1,27 @@
 /*
  * Same as rsa_verify.c without filesystem support.
  */
+//#include <stddef.h>
+#include <string.h>
+
+#include "mbedtls/rsa.h"
+#include "mbedtls/md.h"
+#include "mbedtls/memory_buffer_alloc.h"
 
 // uncomment to profile
 // #define FOR_PROFILE
+// #define USE_SIM
 
-#if !defined(MBEDTLS_CONFIG_FILE)
-
-#include "mbedtls/config.h"
-
+#if defined(USE_SIM)
+#define mbedtls_printf printf
+#include <stdio.h>
 #else
-#include MBEDTLS_CONFIG_FILE
+#define mbedtls_printf(x, ...)  (void)0
 #endif
 
-#include <stdlib.h>
-#include <string.h>
-#define mbedtls_printf(x, ...)  (void)0
-// use this on simulator
-// #define mbedtls_printf printf
-#include "mbedtls/rsa.h"
-#include "mbedtls/md.h"
 #define CHECK(n) if ((n) != 0) {mbedtls_printf("mbedtls_mpi_read_string failed"); ret = -2; goto exit;}
+#define	EXIT_FAILURE	1
+#define	EXIT_SUCCESS	0
 
 // hard coded public key
 const char *PRIV_N = "A1D46FBA2318F8DCEF16C280948B1CF27966B9B47225ED2989F8D74B45BD36049C0AAB5AD0FF003553BA843C8E12782FC5873BB89A3DC84B883D25666CD22BF3ACD5B675969F8BEBFBCAC93FDD927C7442B178B10D1DFF9398E52316AAE0AF74E594650BDC3C670241D418684593CDA1A7B9DC4F20D2FDC6F66344074003E211";
@@ -96,6 +97,12 @@ int loop_once(int argc, const char* argv[]) {
     unsigned char sig_buf[MBEDTLS_MPI_MAX_SIZE];
     const char *sig = NULL;
     const char *msg = NULL;
+
+    // use 6K memory
+    const int buff_size = 1024*6;
+    unsigned char buff[buff_size];
+    mbedtls_memory_buffer_alloc_init(buff, buff_size);
+
     mbedtls_rsa_init(&rsa, MBEDTLS_RSA_PKCS_V15, 0);
 
     sig = "5AC84DEA32E756A5A1C287C5F4F1446F0606ACF8202D419570B2082EB8C439FB2157DF482546487B89FD6A8E00452431E57AD264C9D0B7F71182D250219CFCBA74D61AC01ACE48206DA7D124BE2E1DA77A9E1F4CF34F64CC4085DA79AE406A96C4F15467086839A79EAB691C73D1EE248819479574028389376BD7F9FB4F5C9B";

@@ -4,10 +4,11 @@ CC = riscv64-unknown-elf-gcc
 AR = riscv64-unknown-elf-ar
 LD = riscv64-unknown-elf-ld
 
+CKBLIBC ?= ../../../ckb-c-stdlib/libc
 CKBVM ?= ~/projects/ckb-vm-test-suite/binary/target/release/asm64
-CFLAGS	?= -Os
+CFLAGS	?= -Os -fPIC -nostdinc -nostdlib -I ${CKBLIBC} -fdata-sections -ffunction-sections
 WARNING_CFLAGS ?=  -Wall -Wextra
-LDFLAGS ?=
+LDFLAGS ?= -Wl,--gc-sections -Wl,-static
 
 LOCAL_CFLAGS = $(WARNING_CFLAGS) -I../../include -D_FILE_OFFSET_BITS=64
 LOCAL_LDFLAGS =
@@ -20,9 +21,9 @@ all: rsa_verify_no_fs
 	echo "Build rsa_verify_no_fs done!"
 
 # add --verbose to dump more information
-rsa_verify_no_fs: rsa_verify_no_fs.o
-	echo "RISCV CC and LD $(CFLAGS) $<"
-	$(CC) $(LOCAL_LDFLAGS) $(LDFLAGS) -o $@ $< ../../library/libmbedcrypto.a
+rsa_verify_no_fs: rsa_verify_no_fs.c ../../library/libmbedcrypto.a
+	echo "RISCV ${CFLAGS} $(LDFLAGS) $^"
+	$(CC) ${CFLAGS} ${LOCAL_CFLAGS} $(LOCAL_LDFLAGS) $(LDFLAGS) -o $@ $^
 
 run: rsa_verify_no_fs
 	echo running $(CKBVM) rsa_verify_no_fs
@@ -38,10 +39,6 @@ dis:
 	echo "Disasemble rsa_verify_no_fs to dis.txg"
 	riscv64-unknown-elf-objdump -d rsa_verify_no_fs > dis.txt
 	echo "done"
-
-%.o : %.c
-	echo "RISCV CC $(CFLAGS) $<"
-	$(CC) $(LOCAL_CFLAGS) $(CFLAGS) -o $@ -c $<
 
 clean:
 	rm -f rsa_verify_no_fs

@@ -3,9 +3,12 @@
 
 CC = riscv64-unknown-elf-gcc
 AR = riscv64-unknown-elf-ar
-CFLAGS	?= -Os
+
+CKBLIBC ?= ../../ckb-c-stdlib/libc
+CFLAGS	?= -Os -fPIC -nostdinc -nostdlib -I ${CKBLIBC} -fdata-sections -ffunction-sections
 WARNING_CFLAGS ?=  -Wall -Wextra
-LDFLAGS ?=
+LDFLAGS ?= -Wl,-static
+
 
 LOCAL_CFLAGS = $(WARNING_CFLAGS) -I../include -D_FILE_OFFSET_BITS=64
 LOCAL_LDFLAGS =
@@ -172,7 +175,7 @@ else
 all: shared static
 endif
 
-static: libmbedcrypto.a libmbedx509.a
+static: libmbedcrypto.a
 
 shared: libmbedcrypto.$(DLEXT) libmbedx509.$(DLEXT) libmbedtls.$(DLEXT)
 
