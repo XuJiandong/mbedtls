@@ -4,7 +4,7 @@
 CC = riscv64-unknown-elf-gcc
 AR = riscv64-unknown-elf-ar
 
-CKBLIBC ?= ../../ckb-c-stdlib/libc
+CKBLIBC ?= ../stdinc-used
 CFLAGS	?= -Os -fPIC -nostdinc -nostdlib -I ${CKBLIBC} -fdata-sections -ffunction-sections
 WARNING_CFLAGS ?=  -Wall -Wextra
 LDFLAGS ?= -Wl,-static
